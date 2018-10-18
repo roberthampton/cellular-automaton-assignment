@@ -6,6 +6,7 @@ void menuRules();
 int randomRule();
 int selectRule();
 void decToBinary(int); 
+void menuCA();
 
 int main()
 {
@@ -29,11 +30,16 @@ void menuRules()
 		switch(choice) {
 
    		case 1  :
-      		randomRule();
+      		int r = rand() % 256;
+			// ca menu  
       		break; /* optional */
 	
    		case 2  :
-      		selectRule();
+      		int num;
+			printf("Enter a decimal number between 0 and 255\n");
+   			scanf("%d",&num);
+    		decToBinary(num);
+    		//ca menu 
       		break; /* optional */
 
       	case 3  :
@@ -46,19 +52,6 @@ void menuRules()
 				}
 
 	}while(choice!=3);
-}
-
-int randomRule(){
-	int r = rand() % 256;
-	return r;
-}
-
-int selectRule(){
-
-	int num;
-	printf("Enter a decimal number between 0 and 255\n");
-    scanf("%d",&num);
-    decToBinary(num);
 }
 
 // function to convert decimal to binary 
