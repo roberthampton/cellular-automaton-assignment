@@ -16,7 +16,8 @@ int main()
 void menuRules()
 {
 	int choice = 0;
-
+	int r;
+	int num;
 	do
 	{
 		printf("Enter option:\n" );
@@ -30,12 +31,12 @@ void menuRules()
 		switch(choice) {
 
    		case 1  :
-      		int r = rand() % 256;
+      		r = rand() % 256;
 			// ca menu  
       		break; /* optional */
 	
    		case 2  :
-      		int num;
+      		
 			printf("Enter a decimal number between 0 and 255\n");
    			scanf("%d",&num);
     		decToBinary(num);
