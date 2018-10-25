@@ -3,7 +3,7 @@
 
 
 void menuRules();
-int randomRule();
+void randomRule();
 int selectRule();
 void decToBinary(int); 
 void menuCA();
@@ -26,7 +26,7 @@ int main()
 void menuRules()
 {
 	int choice = 0;
-	int r;
+	
 	int num;
 	do
 	{
@@ -41,7 +41,7 @@ void menuRules()
 		switch(choice) {
 
    		case 1  :
-      		r = rand() % 256;
+      		randomRule();
 			// ca menu  
       		break; /* optional */
 	
@@ -86,22 +86,31 @@ void decToBinary(int n)
     for (i = 8 - 1, d = 0; i >= 0; i--, d++)
       ruleNum[d] = reverseBinaryNum[i];
 
-    for(int i=0; i<8; i++)
-    {
-      printf("%d", ruleNum[i]);
-    }
+}
 
+void randomRule()
+{
+  int r = rand() % 256;
+  printf("Rule %d \n", r);
+  decToBinary(r);
+  generate();
 }
 
 void initParent()
 {
-  parent[16] = 1;
+  parent[15] = 1;
 
   for(int i=0; i<31; i++)
   {
     currGen[i] = parent[i];
   }
   
+}
+
+void selectFirstGenLength()
+{
+  printf("Select the number of cells you would like in the first genration: \n");
+  scanf("");
 }
 
 void createNewGen()
@@ -128,7 +137,7 @@ void createNewGen()
 void generate()
 {
   
-  for(int i = 0; i < 10; i++)
+  for(int i = 0; i < 15; i++)
   {
     if(i == 0)
     {
@@ -146,10 +155,7 @@ void generate()
     {
       printf("%d", currGen[c]);
     }
-
-  }
-
- 
+  } 
 }
 
 int applyRules (int a, int b, int c) {
