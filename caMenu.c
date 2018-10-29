@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<string.h>
 
 
 void menuRules();
@@ -7,19 +8,16 @@ void menuCA();
 void rulePrint();
 void decToBinary(int);
 
-void initParent();
+void initParent(int parent[], int currGen[], int genLength);
 void generate(int);
-void createNewGen();
+void createNewGen(int parent[], int currGen[], int genLength);
 int applyRules(int,int,int);
+int chooseGenLength();
+
 
 
 //holds rule for the program
 char rule[7];
-
-int parent[31] = { 0 };
-
-int currGen[31];
-
 
 int main()
 {
@@ -147,50 +145,90 @@ void menuCA()
    					break;
 				}
 
-	}while(choice!=3);
+	}while(choice!=4);
 
 }
 
-//generates first gen with index 15 = 1  and initializes everything else to 0
-void initParent()
+//Function to allow user to choose the length of each generation
+int chooseGenLength()
 {
-  parent[15] = 1;
-        int i;
-      for(i=0; i<31; i++)
+  int accepted = 0;
+  int genLength;
+  
+  /*
+  Still need to do input validation for this/rest of program. Should probably 
+  just use combination of fgets and sscanf but will leave for now
+  */
+  printf("\n Please enter how many cells you would like in each generation: ");
+  scanf("%d", &genLength);
+
+    return genLength;
+}
+
+//Fucntion to allow user to choose how many generations they would like to see.
+int chooseNumberOfGens()
+{
+  int genNumber;
+  printf("\n Please enter how many generations you would like in total: ");
+  scanf("%d", &genNumber);
+
+  return genNumber;
+}
+
+//generates first gen with  the middle index = 1  and initializes everything else to 0
+void initParent(int parent[], int currGen[], int genLength)
+{
+      for(int i=0; i<genLength; i++)
       {
+        parent[i]=0;
+        //I think parent is probably unneccessary -- could just do this with curr gen.
         currGen[i] = parent[i];
       }
+
+      currGen[genLength/2]=1;
 }
 
-void createFirstGen() //lets the user create first generation
+void createFirstGen(int parent[], int currGen[], int genLength) //lets the user create first generation
 {
            int start;
 
            do//This is just input validation
            {
             printf("===================================\n");
-            printf("Please pick value between 0 and 31!\n");
+            printf("Please pick value between 0 and %d!\n", genLength);
             printf("===================================\n");
             printf("select starting point\n");
             scanf("%d", &start);
-           }while (start > 31 || start < 0);
+           }while (start > genLength || start < 0);
 
-            parent[start] = 1;
-            int i;
-            for(i =0; i<31; i++)
+            for(int i =0; i<genLength; i++)
             {
+              parent[i] = 0;
               currGen[i] = parent[i];
             }
+
+            currGen[start-1] = 1;
 
          }
 
 // starts generating 15 generations and printing them
+// Should rename to something more meaningful probably.
 void generate(int choice)
 {
+  /*prompts user for both length of gen and number of gens first. could add in some kind of flag system 
+  where once this has run once it doesnt have to be done every time. 
+  */
+  int genLength = chooseGenLength();
+  int genNumber = chooseNumberOfGens();
+
+  int parent[genLength];
+
+  int currGen[genLength];
+
   printf("\n");
   printf("\n");
     int i;
-      for( i= 0; i < 15; i++)
+      for( i= 0; i < genNumber; i++)
       {
 
         if(i == 0)
@@ -199,22 +237,21 @@ void generate(int choice)
 
             if(choice==1)
             {
-                createFirstGen();
+                createFirstGen(parent, currGen, genLength);
             }else if(choice==2)
             {
-                initParent();
+                initParent(parent, currGen, genLength);
             }
-
         }
 
         else
         {
           printf("\n");
-          createNewGen();
+          createNewGen(parent, currGen, genLength);
         }
 
             int c;
-        for(c=0; c<31; c++)
+        for(c=0; c<genLength; c++)
         {
           printf("%d", currGen[c]);
         }
@@ -225,13 +262,18 @@ void generate(int choice)
 }
 
 // creates the next generation based on the rules
-void createNewGen()
+void createNewGen(int parent[], int currGen[], int genLength)
 {
-  int newGen[31] = { 0 };
+  int newGen[genLength];
+
+  for(int i=0; i<genLength; i++)
+  {
+    newGen[i]= 0;
+  }
 
   //Currently the first and last element in each generation are unchanged. Need to do this without going out of bounds
   int i;
-  for( i= 1; i<30; i++)
+  for( i= 1; i<genLength-1; i++)
   {
     int left = currGen[i-1];
     int middle = currGen[i];
@@ -240,12 +282,13 @@ void createNewGen()
     newGen[i] = applyRules(left, middle, right);
   }
 int k;
-  for(k=0; k<31; k++)
+  for(k=0; k<genLength; k++)
   {
     currGen[k] = newGen[k];
   }
 
 }
+
 
 
 
