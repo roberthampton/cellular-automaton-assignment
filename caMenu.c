@@ -13,11 +13,13 @@ void generate(int);
 void createNewGen(int parent[], int currGen[], int genLength);
 int applyRules(int,int,int);
 int chooseGenLength();
+void writeToTextFile(int currGen[], int genLength);
 
 
 
 //holds rule for the program
 char rule[7];
+int ruleNum;
 
 int main()
 {
@@ -72,6 +74,7 @@ void menuRules()
 // function to convert decimal to binary
 void decToBinary(int n)
 {
+    ruleNum = n;
     // counter for binary array
     int i = 0;
     while (n > 0) {
@@ -250,15 +253,40 @@ void generate(int choice)
           createNewGen(parent, currGen, genLength);
         }
 
-            int c;
+        int c;
         for(c=0; c<genLength; c++)
         {
           printf("%d", currGen[c]);
+
         }
+        writeToTextFile(currGen, genLength);
       }
 
   printf("\n");
   printf("\n");
+}
+
+//writes each current gen array into a file
+//Still needs some work, as currently it will write every rule to this file with no separation.
+void writeToTextFile(int currGen[], int genLength)
+{
+  FILE *f = fopen("file.txt", "a+");
+
+  if (f == NULL)
+  {
+    printf("Error opening file!\n");
+    exit(1);
+  }
+
+  for(int i = 0; i < genLength; i++)
+  {
+    fprintf(f, "%d", currGen[i]);
+  }
+
+  fprintf(f, "\n" );
+
+  fclose(f);
+
 }
 
 // creates the next generation based on the rules
@@ -281,7 +309,7 @@ void createNewGen(int parent[], int currGen[], int genLength)
 
     newGen[i] = applyRules(left, middle, right);
   }
-int k;
+  int k;
   for(k=0; k<genLength; k++)
   {
     currGen[k] = newGen[k];
