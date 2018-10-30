@@ -13,8 +13,8 @@ void generate(int);
 void createNewGen(int parent[], int currGen[], int genLength);
 int applyRules(int,int,int);
 int chooseGenLength();
-void writeToTextFile(int currGen[], int genLength);
-
+void writeGensToTextFile(int currGen[], int genLength);
+void writeDescriptionToTextFile(int genLength, int genNumber);
 
 
 //holds rule for the program
@@ -225,9 +225,9 @@ void generate(int choice)
   int genNumber = chooseNumberOfGens();
 
   int parent[genLength];
-
   int currGen[genLength];
 
+  writeDescriptionToTextFile(genLength, genNumber);
   printf("\n");
   printf("\n");
     int i;
@@ -259,16 +259,32 @@ void generate(int choice)
           printf("%d", currGen[c]);
 
         }
-        writeToTextFile(currGen, genLength);
+        writeGensToTextFile(currGen, genLength);
       }
 
   printf("\n");
   printf("\n");
 }
 
+void writeDescriptionToTextFile(int genLength, int genNumber)
+{
+	FILE *f = fopen("file.txt", "a+");
+
+	if (f == NULL)
+	{
+	   printf("Error opening file!\n");
+	   exit(1);
+	}
+
+	fprintf(f, "\nThis is rule %d\n", ruleNum);
+	fprintf(f, "There are %d cells in each generation, and there are %d generations in total\n\n", genLength, genNumber);
+
+	fclose(f);
+}
+
 //writes each current gen array into a file
 //Still needs some work, as currently it will write every rule to this file with no separation.
-void writeToTextFile(int currGen[], int genLength)
+void writeGensToTextFile(int currGen[], int genLength)
 {
   FILE *f = fopen("file.txt", "a+");
 
@@ -286,7 +302,6 @@ void writeToTextFile(int currGen[], int genLength)
   fprintf(f, "\n" );
 
   fclose(f);
-
 }
 
 // creates the next generation based on the rules
