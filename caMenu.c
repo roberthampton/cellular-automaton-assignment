@@ -316,11 +316,31 @@ void createNewGen(int parent[], int currGen[], int genLength)
 
   //Currently the first and last element in each generation are unchanged. Need to do this without going out of bounds
   int i;
-  for( i= 1; i<genLength-1; i++)
+  for( i= 0; i < genLength; i++)
   {
-    int left = currGen[i-1];
-    int middle = currGen[i];
-    int right = currGen[i+1];
+  	int left;
+    int middle;
+    int right;
+  	
+  	if(i == 0)
+  	{
+  		left = currGen[genLength-1];
+    	middle = currGen[i];
+    	right = currGen[i+1];
+  	}
+
+  	else if(i == (genLength-1))
+  	{
+  		left = currGen[genLength-2];
+    	middle = currGen[genLength-1];
+    	right = currGen[0];
+  	}
+
+  	else{
+  		left = currGen[i-1];
+    	middle = currGen[i];
+    	right = currGen[i+1];
+  	}
 
     newGen[i] = applyRules(left, middle, right);
   }
