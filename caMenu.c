@@ -7,7 +7,9 @@ void menuRules();
 void menuCA();
 void rulePrint();
 void decToBinary(int);
-
+ void binaryToDec(int);
+	 
+	 
 void initParent(int parent[], int currGen[], int genLength);
 void generateCellularAutomaton(int);
 void createNewGen(int parent[], int currGen[], int genLength);
@@ -640,6 +642,26 @@ void printArray()
            arr[i][k] = arrGen[i][k];
         }
      }
+ }
+
+ void binaryToDec(int num)
+ {
+        int base = 1; //2 to the power of 0 is 1
+        int decimal = 0;
+        int lastDigit;
+
+        while(num>0)
+        {
+             lastDigit= num%10;
+            num/=10;
+
+            decimal += lastDigit*base;
+
+            base*=2;
+        }
+
+        printf("%d", decimal);
+
  }
 
 
