@@ -15,6 +15,7 @@ int applyRules(int,int,int);
 int chooseGenLength();
 void writeGensToTextFile(int currGen[], int genLength);
 void writeDescriptionToTextFile(int genLength, int genNumber);
+int validateInput(int min, int max);
 
 
 //holds rule for the program
@@ -32,9 +33,10 @@ int main()
 //Menu to choose a rule for the program
 void menuRules()
 {
-	int choice = 0;
+	int choice;
 	int r;
 	int num;
+    
 	do
 	{
 		printf("Enter option:\n" );
@@ -43,7 +45,8 @@ void menuRules()
 		printf("2.Select a Rule\n" );
 		printf("3.Exit\n" );
 		printf("=========================\n" );
-		scanf("%d",&choice);
+		choice = validateInput(1,3);
+
 
 		switch(choice) {
 
@@ -87,6 +90,32 @@ void decToBinary(int n)
 
 }
 
+int validateInput(int min, int max)
+{
+  int choice = 0;
+  int accepted = 0;
+      while(accepted == 0)
+    {
+      char userInput[64];
+      fgets(userInput, 63, stdin);
+      if(sscanf(userInput, "%d", &choice)!= 1)
+      {
+        printf("This is not a valid integer. Please try again. \n");
+        continue;
+      }
+
+      else
+      {
+        if((choice<min) ||(choice>max))
+          printf("This is not an option. Please try again. \n");
+        else
+          accepted = 1;
+      } 
+    }
+
+    return choice;
+}
+
 
 //print rule
 void rulePrint()
@@ -115,8 +144,7 @@ int applyRules (int a, int b, int c) {
 //menu to work with the cellular automation
 void menuCA()
 {
-    int choice = 0;
-
+  int choice;
 	do
 	{
 		printf("Enter option:\n" );
@@ -126,7 +154,7 @@ void menuCA()
 		printf("3.Return to previous menu \n" );
 		printf("4.Exit\n" );
 		printf("=========================\n" );
-		scanf("%d",&choice);
+		choice = validateInput(1,4);
 
 		switch(choice) {
 
@@ -154,16 +182,9 @@ void menuCA()
 
 //Function to allow user to choose the length of each generation
 int chooseGenLength()
-{
-  int accepted = 0;
-  int genLength;
-  
-  /*
-  Still need to do input validation for this/rest of program. Should probably 
-  just use combination of fgets and sscanf but will leave for now
-  */
+{ 
   printf("\n Please enter how many cells you would like in each generation: ");
-  scanf("%d", &genLength);
+  int genLength = validateInput(3,120);
 
     return genLength;
 }
@@ -171,9 +192,8 @@ int chooseGenLength()
 //Fucntion to allow user to choose how many generations they would like to see.
 int chooseNumberOfGens()
 {
-  int genNumber;
   printf("\n Please enter how many generations you would like in total: ");
-  scanf("%d", &genNumber);
+  int genNumber = validateInput(2,120);
 
   return genNumber;
 }
@@ -193,17 +213,12 @@ void initParent(int parent[], int currGen[], int genLength)
 
 void createFirstGen(int parent[], int currGen[], int genLength) //lets the user create first generation
 {
-           int start;
-
-           do//This is just input validation
-           {
             printf("===================================\n");
             printf("Please pick value between 0 and %d!\n", genLength);
             printf("===================================\n");
             printf("select starting point\n");
-            scanf("%d", &start);
-           }while (start > genLength || start < 0);
-
+            int start; = validateInput(0,genLength);
+          
             for(int i =0; i<genLength; i++)
             {
               parent[i] = 0;
