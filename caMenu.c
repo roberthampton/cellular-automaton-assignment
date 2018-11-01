@@ -20,7 +20,7 @@ int generateRandomNumber();
 
 
 //holds rule for the program
-char rule[7];
+char rule[8];
 int ruleNum;
 
 
@@ -33,8 +33,6 @@ int ruleNum;
 void gameOfLife();
 void printArray();
 void cellLives();
-
-
 
 int main()
 {
@@ -53,7 +51,6 @@ void menuRules()
 	do
 	{
 		printf("Enter option:\n" );
-		printf("=========================\n" );
 		printf("=========================\n" );
     printf("1.Random Rule\n" );
     printf("2.Select a Rule\n" );
@@ -91,8 +88,11 @@ void menuRules()
 	}while(choice!=4);
 }
 
+//Generates random number, for the random rule option.
 int generateRandomNumber()
 {
+  //seeded using the time to prevent the same numbers from being drawn as frequently.
+  srand ( time(NULL) );
   int r = rand() % 256;
   return r;
 }
@@ -148,7 +148,7 @@ int validateInput(int min, int max)
 void rulePrint()
 {
 int i;
-    for(i = 0; i<=7;i++)
+    for(i = 7; i>-1;i--)
     {
         printf("%d", rule[i]);
     }
@@ -183,7 +183,7 @@ void menuCA()
 	{
 		printf("Enter option:\n" );
 		printf("=========================\n" );
-		printf("1.Create first generation\n" );
+		printf("1.Choose starting position of 1\n" );
 		printf("2.Start with pre-made generation (middle cell is 1) \n" );
 		printf("3.Return to previous menu \n" );
 		printf("4.Exit\n" );
@@ -193,16 +193,16 @@ void menuCA()
 		switch(choice) {
 
    		case 1  :
-                    generateCellularAutomaton(1);
-                    exitMenu = 1;
+            generateCellularAutomaton(1);
+            exitMenu = 1;
       		break;
 
    		case 2  :
-                    generateCellularAutomaton(2);
-                    exitMenu = 1;
+            generateCellularAutomaton(2);
+            exitMenu = 1;
       		break;
-        case 3  :
-                    exitMenu = 1;
+      case 3  :
+            exitMenu = 1;
         break;
 
       	case 4  :
@@ -220,16 +220,16 @@ void menuCA()
 //Function to allow user to choose the length of each generation
 int chooseGenLength()
 { 
-  printf("\n Please enter how many cells you would like in each generation: ");
+  printf("\n Please enter how many cells you would like in each generation (between 3 and 120): ");
   int genLength = validateInput(3,120);
 
     return genLength;
 }
 
-//Fucntion to allow user to choose how many generations they would like to see.
+//Function to allow user to choose how many generations they would like to see.
 int chooseNumberOfGens()
 {
-  printf("\n Please enter how many generations you would like in total: ");
+  printf("\n Please enter how many generations you would like in total (between 2 and 120): ");
   int genNumber = validateInput(2,120);
 
   return genNumber;
@@ -276,7 +276,7 @@ void generateCellularAutomaton(int choice)
   int genLength = chooseGenLength();
   int genNumber = chooseNumberOfGens();
 
-  //Creates empty arrays of the size that is enetered by the user for the initial 'parent' generation and the current generation.
+  //Creates empty arrays of the size that is entered by the user for the initial 'parent' generation and the current generation.
   int parent[genLength];
   int currGen[genLength];
 
@@ -435,7 +435,6 @@ void createNewGen(int parent[], int currGen[], int genLength)
     currGen[k] = newGen[k];
   }
 }
-
 
 //runs the game of Life with a blinker 
 void gameOfLife()
