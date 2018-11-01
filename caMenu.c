@@ -2,47 +2,30 @@
 #include<stdlib.h>
 #include<string.h>
 
-
-#define gridSize 4
 void menuRules();
 void menuCA();
 void rulePrint();
 void decToBinary(int);
 
 void initParent(int parent[], int currGen[], int genLength);
-void generate(int);
+void generateCellularAutomaton(int);
 void createNewGen(int parent[], int currGen[], int genLength);
 int applyRules(int,int,int);
 int chooseGenLength();
 void writeGensToTextFile(int currGen[], int genLength);
 void writeDescriptionToTextFile(int genLength, int genNumber);
 int validateInput(int min, int max);
+int generateRandomNumber();
 
 
 //holds rule for the program
 char rule[7];
 int ruleNum;
 
-
-//array for game of life blinker 
-
-int arr[gridSize][gridSize];  /* = { {0,1,0},
-                  {0,1,0},
-                  {0,1,0} };*/
-
-int arrGen[gridSize][gridSize];
-
-//functions for game of life
-void gameOfLife();
-void printArray();
-void cellLives();
-
-
 int main()
 {
 	menuRules();
-
-	rulePrint();
+  return 0;
 }
 
 
@@ -59,16 +42,15 @@ void menuRules()
 		printf("=========================\n" );
 		printf("1.Random Rule\n" );
 		printf("2.Select a Rule\n" );
-    printf("3. Game of Life\n");
-		printf("4.Exit\n" );
+		printf("3.Exit\n" );
 		printf("=========================\n" );
-		choice = validateInput(1,4);
+		choice = validateInput(1,3);
 
 
 		switch(choice) {
 
    		case 1  :
-      		r = rand() % 256;
+      		r = generateRandomNumber();
       		decToBinary(r);
 			menuCA();
       		break;
@@ -76,18 +58,12 @@ void menuRules()
    		case 2  :
 
 			printf("Enter a decimal number between 0 and 255\n");
-   			scanf("%d",&num);
+   			num = validateInput(0,255);
     		decToBinary(num);
     		menuCA();
       		break;
 
-
-      case 3  : 
-          gameOfLife();
-        break;
-
-
-      	case 4  :
+      	case 3  :
       	printf("Exiting program :) \n");
       	break;
    					default :
@@ -95,6 +71,12 @@ void menuRules()
 				}
 
 	}while(choice!=3);
+}
+
+int generateRandomNumber()
+{
+  int r = rand() % 256;
+  return r;
 }
 
 // function to convert decimal to binary
@@ -113,12 +95,17 @@ void decToBinary(int n)
 
 }
 
+/*
+Takes the minimum and maximum possible value for an input, and ensures it is 
+within the range and is an integer, then returns the integer
+*/
 int validateInput(int min, int max)
 {
   int choice = 0;
   int accepted = 0;
       while(accepted == 0)
     {
+      //Creates a string to hold the usersInput for checking
       char userInput[64];
       fgets(userInput, 63, stdin);
       if(sscanf(userInput, "%d", &choice)!= 1)
@@ -139,18 +126,23 @@ int validateInput(int min, int max)
     return choice;
 }
 
-
 //print rule
 void rulePrint()
 {
 int i;
     for(i = 0; i<=7;i++)
     {
-        printf("%d\n", rule[i]);
+        printf("%d", rule[i]);
     }
+
+    printf("\n");
 
 }
 
+/*
+Takes the the cell to be checked and its left and right neighbours and then uses 
+this combination to return the appropriate bit from the rule array. 
+*/
 int applyRules (int a, int b, int c) {
     if      (a == 1 && b == 1 && c == 1) return rule[7];
     else if (a == 1 && b == 1 && c == 0) return rule[6];
@@ -168,12 +160,13 @@ int applyRules (int a, int b, int c) {
 void menuCA()
 {
   int choice;
+  int exitMenu = 0;
 	do
 	{
 		printf("Enter option:\n" );
 		printf("=========================\n" );
 		printf("1.Create first generation\n" );
-		printf("2.Start with pre-made generation \n" );
+		printf("2.Start with pre-made generation (middle cell is 1) \n" );
 		printf("3.Return to previous menu \n" );
 		printf("4.Exit\n" );
 		printf("=========================\n" );
@@ -182,24 +175,27 @@ void menuCA()
 		switch(choice) {
 
    		case 1  :
-                    generate(1);
+                    generateCellularAutomaton(1);
+                    exitMenu = 1;
       		break;
 
    		case 2  :
-                    generate(2);
+                    generateCellularAutomaton(2);
+                    exitMenu = 1;
       		break;
         case 3  :
-                    menuRules();
+                    exitMenu = 1;
         break;
 
       	case 4  :
       	printf("Exiting program :) \n");
+        exit(-1);
       	break;
    					default :
    					break;
 				}
 
-	}while(choice!=4);
+	}while(exitMenu == 0);
 
 }
 
@@ -221,19 +217,19 @@ int chooseNumberOfGens()
   return genNumber;
 }
 
-//generates first gen with  the middle index = 1  and initializes everything else to 0
+//generate first gen with  the middle index = 1  and initializes everything else to 0
 void initParent(int parent[], int currGen[], int genLength)
 {
       for(int i=0; i<genLength; i++)
       {
         parent[i]=0;
-        //I think parent is probably unneccessary -- could just do this with curr gen.
         currGen[i] = parent[i];
       }
 
       currGen[genLength/2]=1;
 }
 
+//Allows the user to select where the one is in the first generation.
 void createFirstGen(int parent[], int currGen[], int genLength) //lets the user create first generation
 {
             printf("===================================\n");
@@ -252,16 +248,17 @@ void createFirstGen(int parent[], int currGen[], int genLength) //lets the user 
 
          }
 
-// starts generating 15 generations and printing them
-// Should rename to something more meaningful probably.
-void generate(int choice)
+/*
+Starts generating 15 generations and printing them. 
+Takes an integer from the menu that determines whether or not the user will create their own parent generation.
+*/
+void generateCellularAutomaton(int choice)
 {
-  /*prompts user for both length of gen and number of gens first. could add in some kind of flag system 
-  where once this has run once it doesnt have to be done every time. 
-  */
+  //prompts user for both length of each generation and number of generations first. 
   int genLength = chooseGenLength();
   int genNumber = chooseNumberOfGens();
 
+  //Creates empty arrays of the size that is enetered by the user for the initial 'parent' generation and the current generation.
   int parent[genLength];
   int currGen[genLength];
 
@@ -291,10 +288,20 @@ void generate(int choice)
           createNewGen(parent, currGen, genLength);
         }
 
+        if(i == 0)
+        {
+          printf("This is rule number %d which in binary is: ", ruleNum);
+          rulePrint();
+        }
+
         int c;
         for(c=0; c<genLength; c++)
         {
-          printf("%d", currGen[c]);
+          //printf("%d", currGen[c]);
+          if(currGen[c] == 1)
+            printf(".");
+          else
+            printf("O");
 
         }
         writeGensToTextFile(currGen, genLength);
@@ -304,47 +311,61 @@ void generate(int choice)
   printf("\n");
 }
 
+/*
+Writes a description to the text file including the rule number, the number of cells in each generation 
+and the total number of generations. 
+*/
 void writeDescriptionToTextFile(int genLength, int genNumber)
 {
-	FILE *f = fopen("file.txt", "a+");
+  //opens the file if it exists and otherwise creates it. 
+  //It ignores whatever is already in it and continues from the next new line
+	FILE *f = fopen("savedrules.txt", "a+");
 
+  //Error message if the file cannot be opened. Will also terminate the program.
 	if (f == NULL)
 	{
 	   printf("Error opening file!\n");
 	   exit(1);
 	}
 
+  //Writes the appropriate information to the file.
 	fprintf(f, "\nThis is rule %d\n", ruleNum);
 	fprintf(f, "There are %d cells in each generation, and there are %d generations in total\n\n", genLength, genNumber);
 
+  //Closes the file.
 	fclose(f);
 }
 
-//writes each current gen array into a file
-//Still needs some work, as currently it will write every rule to this file with no separation.
+//writes each current generation array into a file after the description.
 void writeGensToTextFile(int currGen[], int genLength)
 {
-  FILE *f = fopen("file.txt", "a+");
+  //opens the file if it exists and otherwise creates it. 
+  //It ignores whatever is already in it and continues from the next new line
+  FILE *f = fopen("savedrules.txt", "a+");
 
+   //Error message if the file cannot be opened. Will also terminate the program.
   if (f == NULL)
   {
     printf("Error opening file!\n");
     exit(1);
   }
 
+  //Writes each element from the currentGen array into the file to form the whole generation.
   for(int i = 0; i < genLength; i++)
   {
     fprintf(f, "%d", currGen[i]);
   }
-
+  //Writes a new line to the file so that when the next generation is written in its on a new line.
   fprintf(f, "\n" );
 
+  //Closes the file.
   fclose(f);
 }
 
 // creates the next generation based on the rules
 void createNewGen(int parent[], int currGen[], int genLength)
 {
+  //Declares an array to hold the next generation.
   int newGen[genLength];
 
   for(int i=0; i<genLength; i++)
@@ -356,10 +377,16 @@ void createNewGen(int parent[], int currGen[], int genLength)
   int i;
   for( i= 0; i < genLength; i++)
   {
+    //Variables to store the bit from the current position and the left and right neighbours.
   	int left;
     int middle;
     int right;
-  	
+
+  	/*
+    For the left most cell, the rules are applied using the right most cell as the left neighbour.
+    genLength is the size of the array so this is taken into consideration and the last cell is accessed by using the 
+    index genLength-1 
+    */
   	if(i == 0)
   	{
   		left = currGen[genLength-1];
@@ -367,6 +394,7 @@ void createNewGen(int parent[], int currGen[], int genLength)
     	right = currGen[i+1];
   	}
 
+    //For the right most cell, the rules are applied using the left most cell as the right neighbour.
   	else if(i == (genLength-1))
   	{
   		left = currGen[genLength-2];
@@ -379,269 +407,17 @@ void createNewGen(int parent[], int currGen[], int genLength)
     	middle = currGen[i];
     	right = currGen[i+1];
   	}
-
+    // uses the rules to assign the new value to each element of the new generation.
     newGen[i] = applyRules(left, middle, right);
   }
   int k;
+  //Sets the current gen to the new generation.
   for(k=0; k<genLength; k++)
   {
     currGen[k] = newGen[k];
   }
-
 }
 
-
-//runs the game of Life with a blinker 
-void gameOfLife()
-{
-  //initialize array 
-
-
-  for(int i = 0; i<gridSize; i++)
-  {
-    for(int k = 0; k<gridSize; k++)
-    {
-      arr[i][k] = rand() % 2;
-    }
-
-  }
-  
-
-  printf("This is the initial state of the blinker:\n");
-  printArray();
-
-
-  int answer; 
-
-  do
-  {
-      cellLives();
-       printf("This is next generationn \n");
-      printArray();
-      printf("To continue press '1' and '2' to stop  \n");
-      answer = validateInput(1,2);
-  }while(answer!=2);
-
-}
-
-//prints out current state of the array 
-void printArray()
-{
-  for(int i = 0; i<gridSize; i++)
-  {
-      for(int k = 0; k<gridSize; k++)
-      {
-
-        printf("%d ", arr[i][k]);
-      }
-              printf("\n");
-    }
-}
-
-
-void cellLives()
-{
-  int N;
-
-
-  for(int i = 0; i<gridSize; i++)
-  {
-      for(int k = 0; k<gridSize; k++)
-      {
-            N=0;
-
-            //check left and right 
-
-
-           
-                if(arr[i][k-1]==1)
-              {
-                N++;
-              } 
-            
-            
-            
-              if(arr[i][k+1]==1)
-              {
-                N++;
-              } 
-          
-
-            
-              if(arr[i-1][k]==1)
-              {
-                N++;
-              } 
-          
-
-
-         
-            if(arr[i+1][k]==1)
-            {
-              N++;
-            } 
-          
-            
-
-            //check diagonals 
-
-         
-            if(arr[i-1][k-1]==1)
-            {
-              N++;
-            } 
-          
-            
-          
-            if(arr[i+1][k+1]==1)
-            {
-              N++;
-            } 
-          
-            
-
-         
-            if(arr[i-1][k+1]==1)
-            {
-              N++;
-            } 
-          
-            
-          
-             if(arr[i+1][k-1]==1)
-            {
-              N++;
-            } 
-          
-
-            //Test correct neighbours display 
-              /*
-              printf("Array:");
-              printf("%d ", arr[i][k]);
-              printf("Neighbours:");
-              printf("%d ", N);
-              printf(" \n");*/
-
-
-
-            switch(N)
-            {
-
-              case 0  :
-                    if(arr[i][k]==1)
-                    {
-                      arrGen[i][k]=0;
-                    } 
-                    else
-                    {
-                      arrGen[i][k] = arr[i][k];
-                    }
-                    break;
-
-              case 1  :
-                     if(arr[i][k]==1)
-                     {
-                      arrGen[i][k]=0;
-                     } 
-                      else
-                    {
-                      arrGen[i][k] = arr[i][k];
-                    }
-                    break;
-
-                    case 2:
-                    arrGen[i][k] = arr[i][k];
-                    break;
-
-              case 3:
-                    if(arr[i][k]==0)
-                    {
-                      arrGen[i][k]=1;
-                    } 
-                     else
-                    {
-                      arrGen[i][k] = arr[i][k];
-                    }
-                break;
-
-
-                case 4:
-                    if(arr[i][k]==1)
-                    {
-                      arrGen[i][k]=0;
-                    } 
-                     else
-                    {
-                      arrGen[i][k] = arr[i][k];
-                    }
-                    break;
-
-                case 5:
-                    if(arr[i][k]==1)
-                    {
-                      arrGen[i][k]=0;
-                    } 
-                     else
-                    {
-                      arrGen[i][k] = arr[i][k];
-                    }
-                    break;
-
-                case 6: 
-                    if(arr[i][k]==1)
-                    {
-                      arrGen[i][k]=0;
-                    } 
-                     else
-                    {
-                      arrGen[i][k] = arr[i][k];
-                    }
-                    break;
-
-                case 7:
-                    if(arr[i][k]==1)
-                    {
-                      arr[i][k]=0;
-                    }
-                     else
-                    {
-                      arrGen[i][k] = arr[i][k];
-                    }
-                    
-                    break;
-
-                 case 8:
-                    if(arr[i][k]==1)
-                    {
-                      arr[i][k]=0;
-                    } 
-                     else
-                    {
-                      arrGen[i][k] = arr[i][k];
-                    }
-                    break;
-
-                        default :
-                        break;
-            }
-
-      }
-
-    }
-
-
-    for(int i = 0; i<gridSize; i++)
-    {
-        for(int k = 0; k<gridSize; k++)
-        {
-           arr[i][k] = arrGen[i][k];
-        }
-
-    }
-
-
-
-}
 
 
 
