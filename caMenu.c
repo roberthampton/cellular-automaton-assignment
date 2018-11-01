@@ -3,6 +3,7 @@
 #include<string.h>
 
 
+#define gridSize 4
 void menuRules();
 void menuCA();
 void rulePrint();
@@ -21,6 +22,21 @@ int validateInput(int min, int max);
 //holds rule for the program
 char rule[7];
 int ruleNum;
+
+
+//array for game of life blinker 
+
+int arr[gridSize][gridSize];  /* = { {0,1,0},
+                  {0,1,0},
+                  {0,1,0} };*/
+
+int arrGen[gridSize][gridSize];
+
+//functions for game of life
+void gameOfLife();
+void printArray();
+void cellLives();
+
 
 int main()
 {
@@ -43,9 +59,10 @@ void menuRules()
 		printf("=========================\n" );
 		printf("1.Random Rule\n" );
 		printf("2.Select a Rule\n" );
-		printf("3.Exit\n" );
+    printf("3. Game of Life\n");
+		printf("4.Exit\n" );
 		printf("=========================\n" );
-		choice = validateInput(1,3);
+		choice = validateInput(1,4);
 
 
 		switch(choice) {
@@ -64,7 +81,13 @@ void menuRules()
     		menuCA();
       		break;
 
-      	case 3  :
+
+      case 3  : 
+          gameOfLife();
+        break;
+
+
+      	case 4  :
       	printf("Exiting program :) \n");
       	break;
    					default :
@@ -217,7 +240,7 @@ void createFirstGen(int parent[], int currGen[], int genLength) //lets the user 
             printf("Please pick value between 0 and %d!\n", genLength);
             printf("===================================\n");
             printf("select starting point\n");
-            int start; = validateInput(0,genLength);
+            int start = validateInput(0,genLength);
           
             for(int i =0; i<genLength; i++)
             {
@@ -367,6 +390,258 @@ void createNewGen(int parent[], int currGen[], int genLength)
 
 }
 
+
+//runs the game of Life with a blinker 
+void gameOfLife()
+{
+  //initialize array 
+
+
+  for(int i = 0; i<gridSize; i++)
+  {
+    for(int k = 0; k<gridSize; k++)
+    {
+      arr[i][k] = rand() % 2;
+    }
+
+  }
+  
+
+  printf("This is the initial state of the blinker:\n");
+  printArray();
+
+
+  int answer; 
+
+  do
+  {
+      cellLives();
+       printf("This is next generationn \n");
+      printArray();
+      printf("To continue press '1' and '2' to stop  \n");
+      answer = validateInput(1,2);
+  }while(answer!=2);
+
+}
+
+//prints out current state of the array 
+void printArray()
+{
+  for(int i = 0; i<gridSize; i++)
+  {
+      for(int k = 0; k<gridSize; k++)
+      {
+
+        printf("%d ", arr[i][k]);
+      }
+              printf("\n");
+    }
+}
+
+
+void cellLives()
+{
+  int N;
+
+
+  for(int i = 0; i<gridSize; i++)
+  {
+      for(int k = 0; k<gridSize; k++)
+      {
+            N=0;
+
+            //check left and right 
+
+
+           
+                if(arr[i][k-1]==1)
+              {
+                N++;
+              } 
+            
+            
+            
+              if(arr[i][k+1]==1)
+              {
+                N++;
+              } 
+          
+
+            
+              if(arr[i-1][k]==1)
+              {
+                N++;
+              } 
+          
+
+
+         
+            if(arr[i+1][k]==1)
+            {
+              N++;
+            } 
+          
+            
+
+            //check diagonals 
+
+         
+            if(arr[i-1][k-1]==1)
+            {
+              N++;
+            } 
+          
+            
+          
+            if(arr[i+1][k+1]==1)
+            {
+              N++;
+            } 
+          
+            
+
+         
+            if(arr[i-1][k+1]==1)
+            {
+              N++;
+            } 
+          
+            
+          
+             if(arr[i+1][k-1]==1)
+            {
+              N++;
+            } 
+          
+
+            //Test correct neighbours display 
+              /*
+              printf("Array:");
+              printf("%d ", arr[i][k]);
+              printf("Neighbours:");
+              printf("%d ", N);
+              printf(" \n");*/
+
+
+
+            switch(N)
+            {
+
+              case 0  :
+                    if(arr[i][k]==1)
+                    {
+                      arrGen[i][k]=0;
+                    } 
+                    else
+                    {
+                      arrGen[i][k] = arr[i][k];
+                    }
+                    break;
+
+              case 1  :
+                     if(arr[i][k]==1)
+                     {
+                      arrGen[i][k]=0;
+                     } 
+                      else
+                    {
+                      arrGen[i][k] = arr[i][k];
+                    }
+                    break;
+
+                    case 2:
+                    arrGen[i][k] = arr[i][k];
+                    break;
+
+              case 3:
+                    if(arr[i][k]==0)
+                    {
+                      arrGen[i][k]=1;
+                    } 
+                     else
+                    {
+                      arrGen[i][k] = arr[i][k];
+                    }
+                break;
+
+
+                case 4:
+                    if(arr[i][k]==1)
+                    {
+                      arrGen[i][k]=0;
+                    } 
+                     else
+                    {
+                      arrGen[i][k] = arr[i][k];
+                    }
+                    break;
+
+                case 5:
+                    if(arr[i][k]==1)
+                    {
+                      arrGen[i][k]=0;
+                    } 
+                     else
+                    {
+                      arrGen[i][k] = arr[i][k];
+                    }
+                    break;
+
+                case 6: 
+                    if(arr[i][k]==1)
+                    {
+                      arrGen[i][k]=0;
+                    } 
+                     else
+                    {
+                      arrGen[i][k] = arr[i][k];
+                    }
+                    break;
+
+                case 7:
+                    if(arr[i][k]==1)
+                    {
+                      arr[i][k]=0;
+                    }
+                     else
+                    {
+                      arrGen[i][k] = arr[i][k];
+                    }
+                    
+                    break;
+
+                 case 8:
+                    if(arr[i][k]==1)
+                    {
+                      arr[i][k]=0;
+                    } 
+                     else
+                    {
+                      arrGen[i][k] = arr[i][k];
+                    }
+                    break;
+
+                        default :
+                        break;
+            }
+
+      }
+
+    }
+
+
+    for(int i = 0; i<gridSize; i++)
+    {
+        for(int k = 0; k<gridSize; k++)
+        {
+           arr[i][k] = arrGen[i][k];
+        }
+
+    }
+
+
+
+}
 
 
 
